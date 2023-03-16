@@ -195,7 +195,16 @@
             <h1 class="text-2xl font-semibold text-gray-900">Dashboard</h1>
           </div>
           <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <!-- Your content -->
+            <iframe
+              id="fred"
+              style="border: 1px solid #666ccc"
+              title="PDF in an i-Frame"
+              :src="pdfDataUri"
+              frameborder="1"
+              scrolling="auto"
+              width="100%"
+              height="600px"
+            ></iframe>
           </div>
         </div>
       </main>
@@ -221,6 +230,14 @@ import {
   UsersIcon,
   XMarkIcon,
 } from "@heroicons/vue/24/outline";
+import { PDFDocument } from "pdf-lib";
+
+const formUrl =
+  "https://raw.githubusercontent.com/Hopding/pdf-lib/master/assets/pdfs/examples/create_document.pdf";
+const formPdfBytes = await fetch(formUrl).then((res) => res.arrayBuffer());
+const pdfDoc = await PDFDocument.load(formPdfBytes);
+const pdfDataUri = await pdfDoc.saveAsBase64({ dataUri: true });
+console.log(pdfDataUri);
 
 const navigation = [
   { name: "Dashboard", href: "#", icon: HomeIcon, current: true },
