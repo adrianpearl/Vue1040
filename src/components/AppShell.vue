@@ -199,15 +199,10 @@
             </h1>
           </div>
           <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-            <iframe
+            <PDFComponent
               v-if="currentTab == 'Documents'"
-              class="border"
-              title="PDF in an i-Frame"
-              :src="pdfDataUri"
-              scrolling="auto"
-              width="100%"
-              height="600px"
-            ></iframe>
+              :response="response"
+            />
             <div v-else class="flex flex-col gap-6">
               <div v-for="field in response.basicInfo" :key="field.label">
                 <FormInputText
@@ -248,17 +243,11 @@ import {
 } from "@heroicons/vue/24/outline";
 import FormInputText from "./FormInputText.vue";
 import FormInputCheckbox from "./FormInputCheckbox.vue";
-import { PDFDocument } from "pdf-lib";
 import { FullRecord, InputType } from "@/types";
+import PDFComponent from "./PDFComponent.vue";
 
 const currentTab = ref("Basic Info");
 const sidebarOpen = ref(false);
-
-const formUrl =
-  "https://raw.githubusercontent.com/adrianpearl/Vue1040/main/src/assets/pdfs/f1040_2022.pdf";
-const formPdfBytes = await fetch(formUrl).then((res) => res.arrayBuffer());
-const pdfDoc = await PDFDocument.load(formPdfBytes);
-const pdfDataUri = await pdfDoc.saveAsBase64({ dataUri: true });
 
 const navigation = [
   { name: "Basic Info", href: "#", icon: IdentificationIcon },
