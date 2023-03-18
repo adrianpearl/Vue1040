@@ -65,16 +65,17 @@
                     :key="item.name"
                     :href="item.href"
                     :class="[
-                      item.current
+                      item.name == currentTab
                         ? 'bg-gray-900 text-white'
                         : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                       'group flex items-center rounded-md px-2 py-2 text-base font-medium',
                     ]"
+                    @click="() => (currentTab = item.name)"
                   >
                     <component
                       :is="item.icon"
                       :class="[
-                        item.current
+                        item.name == currentTab
                           ? 'text-gray-300'
                           : 'text-gray-400 group-hover:text-gray-300',
                         'mr-4 h-6 w-6 flex-shrink-0',
@@ -133,16 +134,17 @@
               :key="item.name"
               :href="item.href"
               :class="[
-                item.current
+                item.name == currentTab
                   ? 'bg-gray-900 text-white'
                   : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                 'group flex items-center rounded-md px-2 py-2 text-sm font-medium',
               ]"
+              @click="() => (currentTab = item.name)"
             >
               <component
                 :is="item.icon"
                 :class="[
-                  item.current
+                  item.name == currentTab
                     ? 'text-gray-300'
                     : 'text-gray-400 group-hover:text-gray-300',
                   'mr-3 h-6 w-6 flex-shrink-0',
@@ -191,20 +193,38 @@
       </div>
       <main class="flex-1">
         <div class="py-6">
-          <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h1 class="text-2xl font-semibold text-gray-900">Dashboard</h1>
+          <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+            <h1 class="text-2xl font-semibold text-gray-900">
+              {{ currentTab }}
+            </h1>
           </div>
-          <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <iframe
-              id="fred"
-              style="border: 1px solid #666ccc"
+              v-if="currentTab == 'Documents'"
+              class="border"
               title="PDF in an i-Frame"
               :src="pdfDataUri"
-              frameborder="1"
               scrolling="auto"
               width="100%"
               height="600px"
             ></iframe>
+            <div v-else class="flex flex-col gap-6">
+              <div v-for="field in response.basicInfo" :key="field.label">
+                <FormInputText
+                  v-if="field.inputType == InputType.TEXT"
+                  :label="field.label"
+                  :format="field.format"
+                  :field="field"
+                  v-model="field.value"
+                />
+                <FormInputCheckbox
+                  v-if="field.inputType == InputType.CHECKBOX"
+                  :label="field.label"
+                  v-model="field.value"
+                />
+              </div>
+              <input type="number" />
+            </div>
           </div>
         </div>
       </main>
@@ -222,31 +242,99 @@ import {
 } from "@headlessui/vue";
 import {
   Bars3Icon,
-  CalendarIcon,
-  ChartBarIcon,
-  FolderIcon,
-  HomeIcon,
   InboxIcon,
-  UsersIcon,
+  IdentificationIcon,
   XMarkIcon,
 } from "@heroicons/vue/24/outline";
+import FormInputText from "./FormInputText.vue";
+import FormInputCheckbox from "./FormInputCheckbox.vue";
 import { PDFDocument } from "pdf-lib";
+import { FullRecord, InputType } from "@/types";
+
+const currentTab = ref("Basic Info");
+const sidebarOpen = ref(false);
 
 const formUrl =
-  "https://raw.githubusercontent.com/Hopding/pdf-lib/master/assets/pdfs/examples/create_document.pdf";
+  "https://raw.githubusercontent.com/adrianpearl/Vue1040/main/src/assets/pdfs/f1040_2022.pdf";
 const formPdfBytes = await fetch(formUrl).then((res) => res.arrayBuffer());
 const pdfDoc = await PDFDocument.load(formPdfBytes);
 const pdfDataUri = await pdfDoc.saveAsBase64({ dataUri: true });
-console.log(pdfDataUri);
 
 const navigation = [
-  { name: "Dashboard", href: "#", icon: HomeIcon, current: true },
-  { name: "Team", href: "#", icon: UsersIcon, current: false },
-  { name: "Projects", href: "#", icon: FolderIcon, current: false },
-  { name: "Calendar", href: "#", icon: CalendarIcon, current: false },
-  { name: "Documents", href: "#", icon: InboxIcon, current: false },
-  { name: "Reports", href: "#", icon: ChartBarIcon, current: false },
+  { name: "Basic Info", href: "#", icon: IdentificationIcon },
+  { name: "Documents", href: "#", icon: InboxIcon },
 ];
 
-const sidebarOpen = ref(false);
+let response: FullRecord = {
+  basicInfo: {
+    firstName: {
+      inputType: InputType.TEXT,
+      label: "First Name",
+      value: "",
+      format: (v: string) => v.toUpperCase(),
+    },
+    middleInitial: {
+      inputType: InputType.TEXT,
+      label: "Middle Initial",
+      value: "",
+      format: (v: string) => v.toUpperCase(),
+      maxlen: 1,
+    },
+    lastName: {
+      inputType: InputType.TEXT,
+      label: "Last Name",
+      value: "",
+      format: (v: string) => v.toUpperCase(),
+    },
+    ssn: {
+      inputType: InputType.TEXT,
+      label: "SSN",
+      value: "",
+      format: formatssn,
+      maxlen: 9,
+    },
+    address: {
+      inputType: InputType.TEXT,
+      label: "Address",
+      value: "",
+      format: (v: string) => v.toUpperCase(),
+    },
+    aptNo: {
+      inputType: InputType.TEXT,
+      label: "Apartment",
+      value: "",
+      format: (v: string) => v.toUpperCase(),
+    },
+    city: {
+      inputType: InputType.TEXT,
+      label: "City",
+      value: "",
+      format: (v: string) => v.toUpperCase(),
+    },
+    state: {
+      inputType: InputType.TEXT,
+      label: "State",
+      value: "",
+      format: (v: string) => v.toUpperCase(),
+    },
+    zipcode: {
+      inputType: InputType.TEXT,
+      label: "Zipcode",
+      value: "",
+      format: (v: string) => v.toUpperCase(),
+    },
+    digitalAssets: {
+      inputType: InputType.CHECKBOX,
+      label: "Digital Assets",
+      value: false,
+    },
+  },
+  w2s: [],
+};
+
+function formatssn(s: string): string {
+  return s
+    .replace(/[^0-9]/g, "")
+    .replace(/^(\d{3})(\d{2})(\d{4})/g, "$1-$2-$3");
+}
 </script>
