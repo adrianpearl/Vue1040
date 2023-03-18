@@ -199,7 +199,7 @@
             </h1>
           </div>
           <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-            <PDFComponent
+            <Form1040Component
               v-if="currentTab == 'Documents'"
               :response="response"
             />
@@ -244,7 +244,7 @@ import {
 import FormInputText from "./FormInputText.vue";
 import FormInputCheckbox from "./FormInputCheckbox.vue";
 import { FullRecord, InputType } from "@/types";
-import PDFComponent from "./PDFComponent.vue";
+import Form1040Component from "./Form1040Component.vue";
 
 const currentTab = ref("Basic Info");
 const sidebarOpen = ref(false);

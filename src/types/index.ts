@@ -3,6 +3,11 @@ export enum InputType {
   CHECKBOX,
 }
 
+export type PDFTextBox = {
+  name: string;
+  value: string;
+};
+
 export type TextField = {
   inputType: InputType.TEXT;
   label: string;

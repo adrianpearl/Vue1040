@@ -10,38 +10,33 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, PropType, computed } from "vue";
+import { defineProps, PropType } from "vue";
 import { PDFDocument } from "pdf-lib";
-import { FullRecord } from "@/types";
+import { PDFTextBox } from "@/types";
 
 const props = defineProps({
-  response: {
-    type: Object as PropType<FullRecord>,
+  url: {
+    type: String,
     required: true,
+  },
+  checkboxes: {
+    type: Array,
+  },
+  textfields: {
+    type: Array as PropType<PDFTextBox[]>,
   },
 });
 
-const basicInfo = computed(() => props.response.basicInfo);
-const formUrl =
-  "https://raw.githubusercontent.com/adrianpearl/Vue1040/main/src/assets/pdfs/f1040_2022.pdf";
-const formPdfBytes = await fetch(formUrl).then((res) => res.arrayBuffer());
+const formPdfBytes = await fetch(props.url).then((res) => res.arrayBuffer());
 const pdfDoc = await PDFDocument.load(formPdfBytes);
 
 const form = pdfDoc.getForm();
-form.getCheckBox("topmostSubform[0].Page1[0].c1_01[0]").check();
 
-const firstNameField = form.getTextField("topmostSubform[0].Page1[0].f1_02[0]");
-firstNameField.setText(
-  `${basicInfo.value.firstName.value} ${basicInfo.value.middleInitial.value}`
-);
-
-const lastNameField = form.getTextField("topmostSubform[0].Page1[0].f1_03[0]");
-lastNameField.setText(`${basicInfo.value.lastName.value}`);
-
-const ssnField = form.getTextField(
-  "topmostSubform[0].Page1[0].YourSocial[0].f1_04[0]"
-);
-ssnField.setText(`${basicInfo.value.ssn.value.replaceAll("-", "")}`);
+props.checkboxes?.map((c) => form.getCheckBox(c as string).check());
+props.textfields?.map((f) => {
+  let field = form.getTextField(f.name);
+  field.setText(f.value);
+});
 
 const fields = form.getFields();
 fields.forEach((field) => {
