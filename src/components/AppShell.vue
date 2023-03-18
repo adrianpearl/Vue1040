@@ -203,23 +203,13 @@
               v-if="currentTab == 'Documents'"
               :response="response"
             />
-            <div v-else class="flex flex-col gap-6">
-              <div v-for="field in response.basicInfo" :key="field.label">
-                <FormInputText
-                  v-if="field.inputType == InputType.TEXT"
-                  :label="field.label"
-                  :format="field.format"
-                  :field="field"
-                  v-model="field.value"
-                />
-                <FormInputCheckbox
-                  v-if="field.inputType == InputType.CHECKBOX"
-                  :label="field.label"
-                  v-model="field.value"
-                />
-              </div>
-              <input type="number" />
-            </div>
+            <MultiForm
+              v-else-if="currentTab == 'W2'"
+              :tab="currentTab"
+              v-model="response.w2s"
+              class="my-16"
+            />
+            <FieldSetComponent v-model="response.basicInfo" v-else />
           </div>
         </div>
       </main>
@@ -240,17 +230,20 @@ import {
   InboxIcon,
   IdentificationIcon,
   XMarkIcon,
+  BanknotesIcon,
+  DocumentTextIcon,
 } from "@heroicons/vue/24/outline";
-import FormInputText from "./FormInputText.vue";
-import FormInputCheckbox from "./FormInputCheckbox.vue";
 import { FullRecord, InputType } from "@/types";
 import Form1040Component from "./Form1040Component.vue";
+import MultiForm from "./MultiForm.vue";
+import FieldSetComponent from "./FieldSetComponent.vue";
 
 const currentTab = ref("Basic Info");
 const sidebarOpen = ref(false);
 
 const navigation = [
   { name: "Basic Info", href: "#", icon: IdentificationIcon },
+  { name: "W2", href: "#", icon: DocumentTextIcon },
   { name: "Documents", href: "#", icon: InboxIcon },
 ];
 
@@ -310,7 +303,8 @@ let response: FullRecord = {
       inputType: InputType.TEXT,
       label: "Zipcode",
       value: "",
-      format: (v: string) => v.toUpperCase(),
+      format: (v: string) => v.replace(/[^0-9]/g, ""),
+      maxlen: 5,
     },
     digitalAssets: {
       inputType: InputType.CHECKBOX,

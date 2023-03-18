@@ -1,5 +1,5 @@
 <template>
-  <FormInput :label="label">
+  <FormInputLabelShell :label="label">
     <div class="relative float-left">
       <input
         type="checkbox"
@@ -9,12 +9,12 @@
         v-model="theModel"
       />
     </div>
-  </FormInput>
+  </FormInputLabelShell>
 </template>
 
 <script setup lang="ts">
 import { defineProps, defineEmits, ref, watch } from "vue";
-import FormInput from "./FormInput.vue";
+import FormInputLabelShell from "./FormInputLabelShell.vue";
 
 const props = defineProps({
   modelValue: Boolean,

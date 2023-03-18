@@ -17,7 +17,7 @@ const props = defineProps({
     required: true,
   },
   checkboxes: {
-    type: Array,
+    type: Array as PropType<string[]>,
   },
 });
 

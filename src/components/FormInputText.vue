@@ -1,5 +1,5 @@
 <template>
-  <FormInput :label="label">
+  <FormInputLabelShell :label="label">
     <div class="relative w-full float-left">
       <input
         type="text"
@@ -15,12 +15,12 @@
         aria-hidden="true"
       />
     </div>
-  </FormInput>
+  </FormInputLabelShell>
 </template>
 
 <script setup lang="ts">
 import { defineProps, defineEmits, ref, watch, PropType } from "vue";
-import FormInput from "./FormInput.vue";
+import FormInputLabelShell from "./FormInputLabelShell.vue";
 import { TextField } from "@/types";
 
 const props = defineProps({

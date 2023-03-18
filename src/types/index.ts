@@ -17,6 +17,15 @@ export type TextField = {
   maxlen?: number;
 };
 
+export type NumericField = {
+  inputType: InputType.TEXT;
+  label: string;
+  value: string;
+  placeholder?: string;
+  format?: (v: string) => string;
+  maxlen?: number;
+};
+
 export type CheckboxField = {
   inputType: InputType.CHECKBOX;
   label: string;
@@ -28,7 +37,11 @@ export type FullRecord = {
   w2s: W2[];
 };
 
-type BasicInfo = {
+export type FieldSet = {
+  [key: string]: TextField | CheckboxField | NumericField;
+};
+
+export interface BasicInfo extends FieldSet {
   firstName: TextField;
   middleInitial: TextField;
   lastName: TextField;
@@ -39,18 +52,25 @@ type BasicInfo = {
   state: TextField;
   zipcode: TextField;
   digitalAssets: CheckboxField;
-};
+}
 
-type W2 = {
-  1: number;
-  2: number;
-  3: number;
-  4: number;
-  5: number;
-  6: number;
-  7: number;
-  8: number;
+export interface W2 extends FieldSet {
+  1: NumericField;
+  2: NumericField;
+  3: NumericField;
+  4: NumericField;
+  5: NumericField;
+  6: NumericField;
+  7: NumericField;
+  8: NumericField;
   // no box 9
-  10: number;
-  11: number;
-};
+  10: NumericField;
+  11: NumericField;
+  "12a Code": TextField;
+  12: TextField;
+  a: TextField;
+  b: TextField;
+  c: TextField;
+  d: TextField;
+  e: TextField;
+}

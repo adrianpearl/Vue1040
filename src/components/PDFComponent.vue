@@ -20,7 +20,7 @@ const props = defineProps({
     required: true,
   },
   checkboxes: {
-    type: Array,
+    type: Array as PropType<string[]>,
   },
   textfields: {
     type: Array as PropType<PDFTextBox[]>,
@@ -32,18 +32,21 @@ const pdfDoc = await PDFDocument.load(formPdfBytes);
 
 const form = pdfDoc.getForm();
 
-props.checkboxes?.map((c) => form.getCheckBox(c as string).check());
+props.checkboxes?.map((c) => form.getCheckBox(c).check());
 props.textfields?.map((f) => {
   let field = form.getTextField(f.name);
   field.setText(f.value);
 });
 
-const fields = form.getFields();
-fields.forEach((field) => {
-  const type = field.constructor.name;
-  const name = field.getName();
-  console.log(`${type}: ${name}`);
-});
+const verbose = false;
+if (verbose) {
+  const fields = form.getFields();
+  fields.forEach((field) => {
+    const type = field.constructor.name;
+    const name = field.getName();
+    console.info(`${type}: ${name}`);
+  });
+}
 
 const pdfDataUri = await pdfDoc.saveAsBase64({ dataUri: true });
 </script>
